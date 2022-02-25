@@ -27,9 +27,7 @@ async function userRoutes(fastify, options) {
             const created = await User.create({ name, login, password, username });
             return created;
         } catch (err) {
-            fastify.log.error(err);
-            reply.code(500);
-            return { error: err.message };
+            return fastify.customErrorHandler(err, reply);
         }
     })
 }

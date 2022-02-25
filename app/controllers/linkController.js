@@ -8,16 +8,11 @@ const createLinkBody = S.object()
 const createLinkResponseBody = S.object()
     .prop("id", S.number()).extend(createLinkBody);
 
+
 const createUserSchema = {
     body: createLinkBody,
     response: {
         200: createLinkResponseBody,
-        500: {
-            type: 'object',
-            properties: {
-                error: { type: 'string' }
-            }
-        }
     }
 }
 
@@ -28,19 +23,16 @@ async function linkRoutes(fastify, options) {
             const created = await Link.create({ title, url });
             return created;
         } catch (err) {
-            fastify.log.error(err);
-            reply.code(500);
-            return { error: err.message };
+           return fastify.customErrorHandler(err, reply);
         }
     });
-
+    
     fastify.get("/link", async (request, reply) => {
         try {
             const created = await Link.findAll();
             return created;
         } catch (err) {
-            fastify.log.error(err);
-            return "erro ao listar link";
+            return fastify.customErrorHandler(err, reply);
         }
     });
 }
